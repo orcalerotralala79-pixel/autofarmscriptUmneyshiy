@@ -1,1 +1,395 @@
-
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local VIM = game:GetService("VirtualInputManager")
+ 
+local player = Players.LocalPlayer
+ 
+-- === Основной GUI ===
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KPMMenu"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+ 
+local frame = Instance.new("Frame")
+frame.Name = "MainFrame"
+frame.Size = UDim2.new(0, 340, 0, 220)
+frame.Position = UDim2.new(0, 20, 0, 20)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BackgroundTransparency = 0.1
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+ 
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = frame
+ 
+-- === Заголовок ===
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, -40, 0, 30)
+header.Position = UDim2.new(0, 12, 0, 8)
+header.BackgroundTransparency = 1
+header.Text = "Umneyshiy | AutoFarm"
+header.TextColor3 = Color3.fromRGB(255, 255, 255)
+header.Font = Enum.Font.GothamBold
+header.TextSize = 18
+header.TextXAlignment = Enum.TextXAlignment.Left
+header.Parent = frame
+ 
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 26, 0, 26)
+closeButton.Position = UDim2.new(1, -34, 0, 8)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 14
+closeButton.Parent = frame
+Instance.new("UICorner", closeButton).CornerRadius = UDim.new(0, 8)
+ 
+-- === Вкладки (Home / Auto Farm) ===
+local tabBar = Instance.new("Frame")
+tabBar.Size = UDim2.new(1, -24, 0, 30)
+tabBar.Position = UDim2.new(0, 12, 0, 42)
+tabBar.BackgroundTransparency = 1
+tabBar.Parent = frame
+ 
+local homeTabBtn = Instance.new("TextButton")
+homeTabBtn.Size = UDim2.new(0.5, -4, 1, 0)
+homeTabBtn.Position = UDim2.new(0, 0, 0, 0)
+homeTabBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
+homeTabBtn.Text = "Home"
+homeTabBtn.Font = Enum.Font.GothamBold
+homeTabBtn.TextSize = 14
+homeTabBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
+homeTabBtn.Parent = tabBar
+Instance.new("UICorner", homeTabBtn).CornerRadius = UDim.new(0, 8)
+ 
+local farmTabBtn = Instance.new("TextButton")
+farmTabBtn.Size = UDim2.new(0.5, -4, 1, 0)
+farmTabBtn.Position = UDim2.new(0.5, 4, 0, 0)
+farmTabBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+farmTabBtn.Text = "Auto Farm"
+farmTabBtn.Font = Enum.Font.GothamBold
+farmTabBtn.TextSize = 14
+farmTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+farmTabBtn.Parent = tabBar
+Instance.new("UICorner", farmTabBtn).CornerRadius = UDim.new(0, 8)
+ 
+-- === Страница Home ===
+local homePage = Instance.new("Frame")
+homePage.Size = UDim2.new(1, -24, 0, 90)
+homePage.Position = UDim2.new(0, 12, 0, 80)
+homePage.BackgroundTransparency = 1
+homePage.Visible = true
+homePage.Parent = frame
+ 
+local kpmBox = Instance.new("Frame")
+kpmBox.Size = UDim2.new(0, 150, 0, 70)
+kpmBox.Position = UDim2.new(0, 0, 0, 0)
+kpmBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+kpmBox.BorderSizePixel = 0
+kpmBox.Parent = homePage
+Instance.new("UICorner", kpmBox).CornerRadius = UDim.new(0, 12)
+ 
+local kpmSub = Instance.new("TextLabel")
+kpmSub.Size = UDim2.new(1, 0, 0, 18)
+kpmSub.Position = UDim2.new(0, 0, 0, 6)
+kpmSub.BackgroundTransparency = 1
+kpmSub.Text = "Убийств в час"
+kpmSub.TextColor3 = Color3.fromRGB(180, 180, 180)
+kpmSub.Font = Enum.Font.Gotham
+kpmSub.TextSize = 12
+kpmSub.Parent = kpmBox
+ 
+local kpmLabel = Instance.new("TextLabel")
+kpmLabel.Size = UDim2.new(1, 0, 0, 34)
+kpmLabel.Position = UDim2.new(0, 0, 0, 26)
+kpmLabel.BackgroundTransparency = 1
+kpmLabel.Text = "0 kills/h"
+kpmLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+kpmLabel.Font = Enum.Font.GothamBold
+kpmLabel.TextSize = 22
+kpmLabel.Parent = kpmBox
+ 
+local timeBox = Instance.new("Frame")
+timeBox.Size = UDim2.new(0, 150, 0, 70)
+timeBox.Position = UDim2.new(0, 164, 0, 0)
+timeBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+timeBox.BorderSizePixel = 0
+timeBox.Parent = homePage
+Instance.new("UICorner", timeBox).CornerRadius = UDim.new(0, 12)
+ 
+local timeSub = Instance.new("TextLabel")
+timeSub.Size = UDim2.new(1, 0, 0, 18)
+timeSub.Position = UDim2.new(0, 0, 0, 6)
+timeSub.BackgroundTransparency = 1
+timeSub.Text = "Время на сервере"
+timeSub.TextColor3 = Color3.fromRGB(180, 180, 180)
+timeSub.Font = Enum.Font.Gotham
+timeSub.TextSize = 12
+timeSub.Parent = timeBox
+ 
+local timeLabel = Instance.new("TextLabel")
+timeLabel.Size = UDim2.new(1, 0, 0, 34)
+timeLabel.Position = UDim2.new(0, 0, 0, 26)
+timeLabel.BackgroundTransparency = 1
+timeLabel.Text = "00:00:00"
+timeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+timeLabel.Font = Enum.Font.GothamBold
+timeLabel.TextSize = 22
+timeLabel.Parent = timeBox
+ 
+-- === Страница Auto Farm ===
+local farmPage = Instance.new("Frame")
+farmPage.Size = UDim2.new(1, -24, 0, 90)
+farmPage.Position = UDim2.new(0, 12, 0, 80)
+farmPage.BackgroundTransparency = 1
+farmPage.Visible = false
+farmPage.Parent = frame
+ 
+local afRow = Instance.new("Frame")
+afRow.Size = UDim2.new(1, 0, 0, 50)
+afRow.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+afRow.BorderSizePixel = 0
+afRow.Parent = farmPage
+Instance.new("UICorner", afRow).CornerRadius = UDim.new(0, 12)
+ 
+local afLabel = Instance.new("TextLabel")
+afLabel.Size = UDim2.new(0.6, 0, 1, 0)
+afLabel.Position = UDim2.new(0, 14, 0, 0)
+afLabel.BackgroundTransparency = 1
+afLabel.Text = "AF (Auto Fight)"
+afLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+afLabel.Font = Enum.Font.GothamBold
+afLabel.TextSize = 15
+afLabel.TextXAlignment = Enum.TextXAlignment.Left
+afLabel.Parent = afRow
+ 
+local toggleBg = Instance.new("Frame")
+toggleBg.Size = UDim2.new(0, 50, 0, 26)
+toggleBg.Position = UDim2.new(1, -64, 0.5, -13)
+toggleBg.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+toggleBg.Parent = afRow
+Instance.new("UICorner", toggleBg).CornerRadius = UDim.new(1, 0)
+ 
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Size = UDim2.new(1, 0, 1, 0)
+toggleBtn.BackgroundTransparency = 1
+toggleBtn.Text = ""
+toggleBtn.Parent = toggleBg
+ 
+local knob = Instance.new("Frame")
+knob.Size = UDim2.new(0, 20, 0, 20)
+knob.Position = UDim2.new(0, 3, 0.5, -10)
+knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+knob.Parent = toggleBg
+Instance.new("UICorner", knob).CornerRadius = UDim.new(1, 0)
+ 
+-- === Мини-кнопка ===
+local miniButton = Instance.new("TextButton")
+miniButton.Size = UDim2.new(0, 55, 0, 55)
+miniButton.Position = UDim2.new(0, 20, 0, 20)
+miniButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+miniButton.BackgroundTransparency = 0.1
+miniButton.Text = "📊"
+miniButton.TextColor3 = Color3.fromRGB(0, 255, 127)
+miniButton.Font = Enum.Font.GothamBold
+miniButton.TextSize = 26
+miniButton.Visible = false
+miniButton.Parent = screenGui
+Instance.new("UICorner", miniButton).CornerRadius = UDim.new(1, 0)
+ 
+-- === Открытие/закрытие меню ===
+closeButton.MouseButton1Click:Connect(function()
+	frame.Visible = false
+	miniButton.Visible = true
+end)
+miniButton.MouseButton1Click:Connect(function()
+	frame.Visible = true
+	miniButton.Visible = false
+end)
+ 
+-- === Вкладки ===
+local function selectTab(tab)
+	if tab == "home" then
+		homePage.Visible = true
+		farmPage.Visible = false
+		homeTabBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
+		homeTabBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
+		farmTabBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		farmTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	else
+		homePage.Visible = false
+		farmPage.Visible = true
+		farmTabBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
+		farmTabBtn.TextColor3 = Color3.fromRGB(20, 20, 20)
+		homeTabBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		homeTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end
+end
+homeTabBtn.MouseButton1Click:Connect(function() selectTab("home") end)
+farmTabBtn.MouseButton1Click:Connect(function() selectTab("farm") end)
+ 
+-- === KPM формула ===
+local function updateKPM()
+	local kpm = 120 + (#Players:GetPlayers() * 20)
+	kpmLabel.Text = kpm .. " kills/h"
+end
+Players.PlayerAdded:Connect(updateKPM)
+Players.PlayerRemoving:Connect(function() task.wait(0.1); updateKPM() end)
+updateKPM()
+ 
+-- === Таймер сессии ===
+local startTime = os.clock()
+RunService.Heartbeat:Connect(function()
+	local elapsed = os.clock() - startTime
+	local h = math.floor(elapsed / 3600)
+	local m = math.floor((elapsed % 3600) / 60)
+	local s = math.floor(elapsed % 60)
+	timeLabel.Text = string.format("%02d:%02d:%02d", h, m, s)
+end)
+ 
+-- === Симуляция клика и клавиш ===
+local function click()
+	VIM:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+	task.wait(0.05)
+	VIM:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+end
+ 
+local function pressKey(key)
+	VIM:SendKeyEvent(true, key, false, game)
+	task.wait(0.05)
+	VIM:SendKeyEvent(false, key, false, game)
+end
+ 
+-- === Общий флаг ON/OFF (используется ОБОИМИ циклами ниже) ===
+local afEnabled = false
+local afThread = nil     -- поток макроса ударов
+local lockThread = nil   -- поток слежки за целью
+ 
+-- === Привязка к случайному игроку ===
+local currentTarget = nil
+local targetConn = nil
+ 
+local function getRandomTarget()
+	local candidates = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= player and p.Character and p.Character:FindFirstChild("Humanoid") and p.Character.Humanoid.Health > 0 then
+			table.insert(candidates, p)
+		end
+	end
+	if #candidates == 0 then return nil end
+	return candidates[math.random(1, #candidates)]
+end
+ 
+local function lockCameraToTarget(targetPlayer)
+	local char = targetPlayer.Character
+	if not char then return end
+	local hum = char:FindFirstChild("Humanoid")
+	if not hum then return end
+	workspace.CurrentCamera.CameraSubject = hum
+end
+ 
+local function releaseCameraLock()
+	local myChar = player.Character
+	if myChar and myChar:FindFirstChild("Humanoid") then
+		workspace.CurrentCamera.CameraSubject = myChar.Humanoid
+	end
+end
+ 
+local function pickNewTarget()
+	if targetConn then
+		targetConn:Disconnect()
+		targetConn = nil
+	end
+ 
+	local newTarget = getRandomTarget()
+	currentTarget = newTarget
+ 
+	if newTarget then
+		lockCameraToTarget(newTarget)
+		local hum = newTarget.Character:FindFirstChild("Humanoid")
+		if hum then
+			targetConn = hum.Died:Connect(function()
+				if afEnabled then
+					task.wait(0.3)
+					pickNewTarget()
+				end
+			end)
+		end
+	else
+		releaseCameraLock()
+	end
+end
+ 
+-- Поток №1: постоянно следит за целью, независимо от макроса
+local function targetWatchLoop()
+	while afEnabled do
+		if currentTarget then
+			local stillValid = currentTarget.Parent ~= nil
+				and currentTarget.Character
+				and currentTarget.Character:FindFirstChild("Humanoid")
+				and currentTarget.Character.Humanoid.Health > 0
+ 
+			if not stillValid then
+				pickNewTarget()
+			end
+		else
+			pickNewTarget()
+		end
+		task.wait(1)
+	end
+end
+ 
+-- Поток №2: чистый макрос ударов, крутится сам по себе с паузой 20 сек
+local function afLoop()
+	while afEnabled do
+		for i = 1, 3 do click() end
+		pressKey(Enum.KeyCode.One)
+ 
+		task.wait(1)
+		if not afEnabled then break end
+ 
+		for i = 1, 3 do click() end
+		pressKey(Enum.KeyCode.Two)
+ 
+		task.wait(1)
+		if not afEnabled then break end
+ 
+		pressKey(Enum.KeyCode.Two)
+ 
+		task.wait(1)
+		if not afEnabled then break end
+ 
+		pressKey(Enum.KeyCode.Three)
+		pressKey(Enum.KeyCode.Four)
+ 
+		if afEnabled then
+			task.wait(20)
+		end
+	end
+end
+ 
+-- === Переключатель: запускает ОБА потока одним нажатием ===
+toggleBtn.MouseButton1Click:Connect(function()
+	afEnabled = not afEnabled
+ 
+	if afEnabled then
+		knob:TweenPosition(UDim2.new(1, -23, 0.5, -10), "Out", "Quad", 0.15, true)
+		toggleBg.BackgroundColor3 = Color3.fromRGB(0, 255, 127)
+ 
+		pickNewTarget()
+		lockThread = task.spawn(targetWatchLoop)
+		afThread = task.spawn(afLoop)
+	else
+		knob:TweenPosition(UDim2.new(0, 3, 0.5, -10), "Out", "Quad", 0.15, true)
+		toggleBg.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+ 
+		if targetConn then
+			targetConn:Disconnect()
+			targetConn = nil
+		end
+		currentTarget = nil
+		releaseCameraLock()
+	end
+end)
