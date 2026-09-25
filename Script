@@ -1,0 +1,105 @@
+local Players = game:GetService("Players")
+
+-- === Создаём меню ===
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KPMMenu"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Name = "MainFrame"
+frame.Size = UDim2.new(0, 260, 0, 100)
+frame.Position = UDim2.new(0, 20, 0, 20)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BackgroundTransparency = 0.2
+frame.BorderSizePixel = 0
+frame.Visible = true
+frame.Parent = screenGui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -40, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "Статистика убийств"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = frame
+
+local kpmLabel = Instance.new("TextLabel")
+kpmLabel.Name = "KPMLabel"
+kpmLabel.Size = UDim2.new(1, 0, 0, 50)
+kpmLabel.Position = UDim2.new(0, 0, 0, 35)
+kpmLabel.BackgroundTransparency = 1
+kpmLabel.Text = "Убийств в час: 0"
+kpmLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+kpmLabel.Font = Enum.Font.GothamBold
+kpmLabel.TextSize = 22
+kpmLabel.Parent = frame
+
+-- === Кнопка закрытия (крестик) на самом меню ===
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -35, 0, 5)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 16
+closeButton.Parent = frame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeButton
+
+-- === Мини-кнопка (появляется после закрытия) ===
+local miniButton = Instance.new("TextButton")
+miniButton.Name = "MiniButton"
+miniButton.Size = UDim2.new(0, 55, 0, 55)
+miniButton.Position = UDim2.new(0, 20, 0, 20)
+miniButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+miniButton.BackgroundTransparency = 0.1
+miniButton.Text = "📊"
+miniButton.TextColor3 = Color3.fromRGB(0, 255, 127)
+miniButton.Font = Enum.Font.GothamBold
+miniButton.TextSize = 26
+miniButton.Visible = false -- скрыта, пока меню открыто
+miniButton.Parent = screenGui
+
+local miniCorner = Instance.new("UICorner")
+miniCorner.CornerRadius = UDim.new(1, 0) -- круглая кнопка
+miniCorner.Parent = miniButton
+
+-- === Логика открытия/закрытия ===
+closeButton.MouseButton1Click:Connect(function()
+	frame.Visible = false
+	miniButton.Visible = true
+end)
+
+miniButton.MouseButton1Click:Connect(function()
+	frame.Visible = true
+	miniButton.Visible = false
+end)
+
+-- === Формула KPM ===
+local function updateKPM()
+	local playerCount = #Players:GetPlayers()
+	local kpm = 120 + (playerCount * 20)
+	kpmLabel.Text = "Убийств в час: " .. kpm
+end
+
+-- Обновляем при входе/выходе игроков
+Players.PlayerAdded:Connect(updateKPM)
+Players.PlayerRemoving:Connect(function()
+	task.wait(0.1)
+	updateKPM()
+end)
+
+-- Первый расчёт при запуске
+updateKPM()
